@@ -12,10 +12,21 @@ WHERE employees.city = 'London' AND customers.city = 'London'
 -- имя поставщика и его телефон (contact_name и phone в табл suppliers) для таких продуктов,
 -- которые не сняты с продажи (поле discontinued) и которых меньше 25 и которые в категориях Dairy Products и Condiments.
 -- Отсортировать результат по возрастанию количества оставшегося товара.
-
+SELECT product_name, units_in_stock, contact_name, phone
+FROM products
+INNER JOIN suppliers USING(supplier_id)
+INNER JOIN categories ON products.category_id=categories.category_id AND category_name IN ('Dairy Products', 'Condiments')
+WHERE discontinued = 0 AND units_in_stock < 25
+ORDER BY units_in_stock
 
 -- 3. Список компаний заказчиков (company_name из табл customers), не сделавших ни одного заказа
-
+SELECT company_name
+FROM customers
+LEFT JOIN orders USING(customer_id)
+WHERE order_id IS NULL
 
 -- 4. уникальные названия продуктов, которых заказано ровно 10 единиц (количество заказанных единиц см в колонке quantity табл order_details)
 -- Этот запрос написать именно с использованием подзапроса.
+SELECT product_name FROM products
+WHERE products.product_id IN (SELECT order_details.product_id FROM order_details
+							  WHERE quantity = 10)
